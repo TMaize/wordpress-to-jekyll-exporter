@@ -1,8 +1,8 @@
 const path = require('path')
 
-const config = require('./config.js')
-const db = require('./db.js')
-const util = require('./util.js')
+const config = require('./pkg/config.js')
+const db = require('./pkg/db.js')
+const util = require('./pkg/util.js')
 
 // 查询所有文章
 let queryPosts = `SELECT * FROM wp_posts t WHERE t.post_status = 'publish' and t.post_type = 'post' ORDER BY t.ID desc`

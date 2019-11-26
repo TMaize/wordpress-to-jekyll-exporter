@@ -10,7 +10,7 @@ const mysqlInfo = {
 }
 
 // 导出目录
-const outDir = path.join(__dirname, 'out')
+const outDir = path.join(__dirname, '..', 'out')
 const clearOutDir = false
 
 module.exports = {
