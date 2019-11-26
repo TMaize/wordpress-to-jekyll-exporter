@@ -1,0 +1,19 @@
+{
+  "name": "wordpress-to-jekyll-exporter",
+  "version": "1.0.0",
+  "description": "WordPress to Jekyll Exporter",
+  "main": "main.js",
+  "scripts": {
+    "star": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TMaize/wordpress-to-jekyll-exporter.git"
+  },
+  "author": "TMaize",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TMaize/wordpress-to-jekyll-exporter/issues"
+  },
+  "homepage": "https://github.com/TMaize/wordpress-to-jekyll-exporter#readme"
+}
