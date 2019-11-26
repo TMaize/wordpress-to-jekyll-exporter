@@ -25,9 +25,10 @@ let queryAuthor = `SELECT t2.display_name FROM wp_posts t1,wp_users t2 where t1.
     let title = postRow.post_title
     let content = postRow.post_content
     let author = authorRow[0].display_name
+    let permalink = decodeURIComponent(postRow.post_name)
     let categories = metaRows.filter(m => m.taxonomy == 'category').map(c => c.name)
     let tags = metaRows.filter(m => m.taxonomy == 'post_tag').map(c => c.name)
-    let fileName = util.formatTime(postRow.post_date, 'YYYY-MM-DD') + '-' + postRow.post_name + '.md'
+    let fileName = `${util.formatTime(postRow.post_date, 'YYYY-MM-DD')}-${permalink}.md`
 
     console.log(fileName)
   }
