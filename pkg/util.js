@@ -1,8 +1,15 @@
 const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
+const turndown = require('turndown')
 
 moment.locale('zh-cn')
+
+let turndownService = new turndown({
+  headingStyle: 'atx',
+  hr: '---',
+  bulletListMarker: '+'
+})
 
 const formatTime = (date, pattern) => {
   date = date || new Date()
@@ -41,12 +48,9 @@ const delFileAndDir = p => {
   }
 }
 
-const arrayToString = arr => {
-  if (!Array.isArray(arr) || arr.length == 0) {
-    return '[]'
-  }
-  let str = JSON.stringify(arr)
-  return str.replace(/"/g, "'").replace(/,/g, ', ')
+// html转markdown
+const htmlToMarkdown = htmlText => {
+  return turndownService.turndown(htmlText)
 }
 
 module.exports = {
@@ -54,5 +58,5 @@ module.exports = {
   writeFile,
   readFile,
   delFileAndDir,
-  arrayToString
+  htmlToMarkdown
 }

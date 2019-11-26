@@ -3,6 +3,7 @@ const path = require('path')
 const config = require('./pkg/config.js')
 const db = require('./pkg/db.js')
 const util = require('./pkg/util.js')
+const jekyll = require('./pkg/jekyll.js')
 
 // 查询所有文章
 let queryPosts = `SELECT * FROM wp_posts t WHERE t.post_status = 'publish' and t.post_type = 'post' ORDER BY t.ID desc`
@@ -43,16 +44,16 @@ let queryAuthor = `SELECT t2.display_name FROM wp_posts t1,wp_users t2 where t1.
     // jekyll文章头部内容
     let frontMatter = `---`
     frontMatter += `\nlayout: mypost`
-    frontMatter += `\ntitle: ${title}`
-    frontMatter += `\nauthor: ${author}`
+    frontMatter += `\ntitle: ${jekyll.fixFrontText(title)}`
+    frontMatter += `\nauthor: ${jekyll.fixFrontText(author)}`
     frontMatter += `\nimage: ''`
-    frontMatter += `\ncategories: ${util.arrayToString(categories)}`
-    frontMatter += `\ntags: ${util.arrayToString(tags)}`
+    frontMatter += `\ncategories: ${jekyll.fixFrontArray(categories)}`
+    frontMatter += `\ntags: ${jekyll.fixFrontArray(tags)}`
     frontMatter += `\n---\n`
 
-    util.writeFile(path.join(config.outDir, fileName), `${frontMatter}\n${content}`)
+    content = util.htmlToMarkdown(content)
 
-    break
+    util.writeFile(path.join(config.outDir, fileName), `${frontMatter}\n${content}`)
   }
 
   // 销毁所有链接
