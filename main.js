@@ -1,3 +1,6 @@
+const path = require('path')
+
+const config = require('./config.js')
 const db = require('./db.js')
 const util = require('./util.js')
 
@@ -15,8 +18,13 @@ queryMeta += ` ORDER BY LOWER(t4.name) asc `
 let queryAuthor = `SELECT t2.display_name FROM wp_posts t1,wp_users t2 where t1.ID=? AND t1.post_author = t2.ID`
 
 ;(async () => {
-  let postRows = await db.query(queryPosts)
+  // 清空输出目录
+  if (config.clearOutDir === true) {
+    console.log('[clear]', config.outDir)
+    util.delFileAndDir(config.outDir)
+  }
 
+  let postRows = await db.query(queryPosts)
   for (let i = 0; i < postRows.length; i++) {
     let postRow = postRows[i]
     let authorRow = await db.query(queryAuthor, [postRow.ID])
@@ -31,6 +39,20 @@ let queryAuthor = `SELECT t2.display_name FROM wp_posts t1,wp_users t2 where t1.
     let fileName = `${util.formatTime(postRow.post_date, 'YYYY-MM-DD')}-${permalink}.md`
 
     console.log(fileName)
+
+    // jekyll文章头部内容
+    let frontMatter = `---`
+    frontMatter += `\nlayout: mypost`
+    frontMatter += `\ntitle: ${title}`
+    frontMatter += `\nauthor: ${author}`
+    frontMatter += `\nimage: ''`
+    frontMatter += `\ncategories: ${util.arrayToString(categories)}`
+    frontMatter += `\ntags: ${util.arrayToString(tags)}`
+    frontMatter += `\n---\n`
+
+    util.writeFile(path.join(config.outDir, fileName), `${frontMatter}\n${content}`)
+
+    break
   }
 
   // 销毁所有链接
