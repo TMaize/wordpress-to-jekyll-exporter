@@ -43,7 +43,7 @@ let queryAuthor = `SELECT t2.display_name FROM wp_posts t1,wp_users t2 where t1.
 
     // jekyll文章头部内容
     let frontMatter = `---`
-    frontMatter += `\nlayout: mypost`
+    frontMatter += `\nlayout: post`
     frontMatter += `\ntitle: ${jekyll.fixFrontText(title)}`
     frontMatter += `\nauthor: ${jekyll.fixFrontText(author)}`
     frontMatter += `\nimage: ''`
@@ -51,6 +51,7 @@ let queryAuthor = `SELECT t2.display_name FROM wp_posts t1,wp_users t2 where t1.
     frontMatter += `\ntags: ${jekyll.fixFrontArray(tags)}`
     frontMatter += `\n---\n`
 
+    content = jekyll.fixPostContent(content)
     content = util.htmlToMarkdown(content)
 
     util.writeFile(path.join(config.outDir, fileName), `${frontMatter}\n${content}`)

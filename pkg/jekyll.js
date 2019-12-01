@@ -1,3 +1,7 @@
+const jsdom = require('jsdom')
+const { JSDOM } = jsdom
+const $ = require('jquery')(new JSDOM('').window)
+
 const fixFrontText = str => {
   str = str.trim()
   str = str.replace(/&amp;/g, '&')
@@ -12,7 +16,7 @@ const fixFrontArray = arr => {
   }
   a = a.map(v => v.toString().trim())
   a = a.map(v => v.replace(/&amp;/g, '&'))
-  a = a.map(v => v.replace(/'/g, '"'))
+  a = a.map(v => v.replace(/'|"/g, ''))
 
   let t = '['
   for (let i = 0; i < a.length; i++) {
@@ -25,7 +29,25 @@ const fixFrontArray = arr => {
   return t
 }
 
+// 去除[caption]标记
+const fixPostContent = content => {
+  let text = content
+  while (true) {
+    let reg = /\[caption.*?](.+?)\[\/caption\]/
+    let result = reg.exec(text)
+    if (!result) {
+      break
+    }
+    let alt = $(`<div>${result[1]}</div>`).text()
+    let dom = $(`<div>${result[1].replace(alt, '')}</div>`)
+    dom.find('img').attr('alt', alt.trim())
+    text = text.replace(result[0], `\n${dom.html()}\n`)
+  }
+  return text
+}
+
 module.exports = {
   fixFrontText,
-  fixFrontArray
+  fixFrontArray,
+  fixPostContent
 }
