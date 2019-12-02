@@ -6,6 +6,7 @@ const fixFrontText = str => {
   str = str.trim()
   str = str.replace(/&amp;/g, '&')
   str = str.replace(/'/g, '"')
+  str = str.replace('&#038;', '&')
   return `'${str}'`
 }
 
@@ -17,6 +18,7 @@ const fixFrontArray = arr => {
   a = a.map(v => v.toString().trim())
   a = a.map(v => v.replace(/&amp;/g, '&'))
   a = a.map(v => v.replace(/'|"/g, ''))
+  a = a.map(v => v.replace('&#038;', '&'))
 
   let t = '['
   for (let i = 0; i < a.length; i++) {
@@ -46,8 +48,35 @@ const fixPostContent = content => {
   return text
 }
 
+const fixPostImage = (content, domain, imgBaseUrl) => {
+  let siteImgs = []
+  let dom = $(`<div>${content}</div>`)
+  dom.find('img').each((i, v) => {
+    let src = $(v).attr('src')
+    let absSrc = src.replace('http://' + domain + '/wp-content/uploads', '')
+    absSrc = absSrc.replace('https://' + domain + '/wp-content/uploads', '')
+    if (absSrc != src) {
+      $(v).attr('src', imgBaseUrl + absSrc)
+      siteImgs.push(absSrc)
+    }
+  })
+  return {
+    content: dom.html(),
+    imgs: siteImgs
+  }
+}
+
+console.log(
+  fixPostImage(
+    `<div><img src="http://www.myshantou.org/wp-content/uploads/2016/03/2016-03-30-下午2.09.20.png"></div>`,
+    'www.myshantou.org',
+    ''
+  )
+)
+
 module.exports = {
   fixFrontText,
   fixFrontArray,
-  fixPostContent
+  fixPostContent,
+  fixPostImage
 }

@@ -19,12 +19,6 @@ queryMeta += ` ORDER BY LOWER(t4.name) asc `
 let queryAuthor = `SELECT t2.display_name FROM wp_posts t1,wp_users t2 where t1.ID=? AND t1.post_author = t2.ID`
 
 ;(async () => {
-  // 清空输出目录
-  if (config.clearOutDir === true) {
-    console.log('[clear]', config.outDir)
-    util.delFileAndDir(config.outDir)
-  }
-
   let postRows = await db.query(queryPosts)
   for (let i = 0; i < postRows.length; i++) {
     let postRow = postRows[i]
@@ -41,20 +35,37 @@ let queryAuthor = `SELECT t2.display_name FROM wp_posts t1,wp_users t2 where t1.
 
     console.log(fileName)
 
+    let postAndImage = jekyll.fixPostImage(content, config.siteDoamin, config.jekyllImgBaseUrl)
+    console.log(postAndImage.imgs)
+
+    // 文章首图
+    let images = postAndImage.imgs
+    let image = ''
+    if (images.length > 0) {
+      image = config.jekyllImgBaseUrl + images[0]
+    }
+
+    // 拷贝所有图片
+    for (let i = 0; i < images.length; i++) {
+      let src = path.join(config.uploadPath, images[i])
+      let dest = path.join(config.imageOutDir, images[i])
+      util.copyFile(src, dest)
+    }
+
+    content = jekyll.fixPostContent(postAndImage.content)
+    content = util.htmlToMarkdown(content)
+
     // jekyll文章头部内容
     let frontMatter = `---`
     frontMatter += `\nlayout: post`
     frontMatter += `\ntitle: ${jekyll.fixFrontText(title)}`
     frontMatter += `\nauthor: ${jekyll.fixFrontText(author)}`
-    frontMatter += `\nimage: ''`
+    frontMatter += `\nimage: '${image}'`
     frontMatter += `\ncategories: ${jekyll.fixFrontArray(categories)}`
     frontMatter += `\ntags: ${jekyll.fixFrontArray(tags)}`
     frontMatter += `\n---\n`
 
-    content = jekyll.fixPostContent(content)
-    content = util.htmlToMarkdown(content)
-
-    util.writeFile(path.join(config.outDir, fileName), `${frontMatter}\n${content}`)
+    util.writeFile(path.join(config.postOutDir, fileName), `${frontMatter}\n${content}`)
   }
 
   // 销毁所有链接
