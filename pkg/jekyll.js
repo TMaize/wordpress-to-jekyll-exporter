@@ -55,6 +55,9 @@ const fixPostImage = (content, domain, imgBaseUrl) => {
     let src = $(v).attr('src')
     let absSrc = src.replace('http://' + domain + '/wp-content/uploads', '')
     absSrc = absSrc.replace('https://' + domain + '/wp-content/uploads', '')
+    // 兼容
+    absSrc = absSrc.replace('http://' + domain + '/wp-content', '')
+    absSrc = absSrc.replace('https://' + domain + '/wp-content', '')
     if (absSrc != src) {
       $(v).attr('src', imgBaseUrl + absSrc)
       siteImgs.push(absSrc)
