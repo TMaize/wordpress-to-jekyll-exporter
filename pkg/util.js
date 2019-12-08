@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
 const turndown = require('turndown')
+const turndownPluginGfm = require('turndown-plugin-gfm')
 
 moment.locale('zh-cn')
 
@@ -10,6 +11,7 @@ let turndownService = new turndown({
   hr: '---',
   bulletListMarker: '+'
 })
+turndownService.use(turndownPluginGfm.gfm)
 
 // 格式化时间
 const formatTime = (date, pattern) => {
@@ -76,7 +78,11 @@ const copyFile = (src, dest) => {
 
 // html转markdown
 const htmlToMarkdown = htmlText => {
-  return turndownService.turndown(htmlText)
+  let temp = htmlText.replace(/\n{2,}/g, 'r2!!')
+  temp = temp.replace(/\n/g, 'r1!!')
+  temp = turndownService.turndown(temp)
+  temp = temp.replace(/r2!!/g, '\n\n')
+  return temp.replace(/r1!!/g, '<br>\n')
 }
 
 module.exports = {

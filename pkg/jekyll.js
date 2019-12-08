@@ -69,14 +69,6 @@ const fixPostImage = (content, domain, imgBaseUrl) => {
   }
 }
 
-console.log(
-  fixPostImage(
-    `<div><img src="http://www.myshantou.org/wp-content/uploads/2016/03/2016-03-30-下午2.09.20.png"></div>`,
-    'www.myshantou.org',
-    ''
-  )
-)
-
 module.exports = {
   fixFrontText,
   fixFrontArray,
